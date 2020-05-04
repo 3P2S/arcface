@@ -1,11 +1,4 @@
-# [arcface-tf2](https://github.com/peteryuX/arcface-tf2)
-
-[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/peteryuX/arcface-tf2.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/peteryuX/arcface-tf2/context:python)
-![Star](https://img.shields.io/github/stars/peteryuX/arcface-tf2)
-![Fork](https://img.shields.io/github/forks/peteryuX/arcface-tf2)
-![License](https://img.shields.io/github/license/peteryuX/arcface-tf2)
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/peteryuX/arcface-tf2/blob/master/notebooks/colab-github-demo.ipynb)
+# ArcFace Tensorflow 2
 
 :fire: ArcFace (Additive Angular Margin Loss for Deep Face Recognition, published in CVPR 2019) implemented in Tensorflow 2.0+. This is an unofficial implementation. :fire:
 
@@ -146,7 +139,7 @@ python train.py --mode="fit" --cfg_path="./configs/arc_res50.yaml"
 You can download my trained models for testing from [Benchmark and Models](#Benchmark-and-Models) without training it yourself. And, evaluate the models you got with the corresponding cfg file on the testing dataset. The testing code in [./modules/evaluations.py](https://github.com/peteryuX/arcface-tf2/blob/master/modules/evaluations.py) were modified from [face.evoLVe](https://github.com/ZhaoJ9014/face.evoLVe.PyTorch).
 
 ```bash
-python test.py --cfg_path="./configs/arc_res50.yaml"
+python infer.py 
 ```
 
 ### Encode Input Image

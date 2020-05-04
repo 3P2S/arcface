@@ -28,7 +28,7 @@ def main(_argv):
 
     # Build config object and request pose data
     cfg = rs.config()
-    cfg.enable_stream(rs.stream.pose)
+    cfg.enable_stream(rs.stream.color)
 
     # Start streaming with requested config
     pipe.start(cfg)
