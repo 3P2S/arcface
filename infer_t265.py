@@ -1,4 +1,5 @@
 from absl import app, flags, logging
+import pyrealsense2 as rs
 from absl.flags import FLAGS
 import cv2
 import os
@@ -23,6 +24,15 @@ flags.DEFINE_string('video', None, 'video file path')
 
 
 def main(_argv):
+    pipe = rs.pipeline()
+
+    # Build config object and request pose data
+    cfg = rs.config()
+    cfg.enable_stream(rs.stream.pose)
+
+    # Start streaming with requested config
+    pipe.start(cfg)
+
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
     os.environ['CUDA_VISIBLE_DEVICES'] = FLAGS.gpu
 
@@ -53,47 +63,43 @@ def main(_argv):
         targets, names = load_facebank(cfg)
         print('Face bank loaded')
 
-    if FLAGS.video is None:
-        cap = cv2.VideoCapture(0)
-    else:
-        cap = cv2.VideoCapture(str(FLAGS.video))
-
     if FLAGS.save:
         video_writer = cv2.VideoWriter('./recording.avi', cv2.VideoWriter_fourcc(*'XVID'), 10, (640, 480))
         # frame rate 6 due to my laptop is quite slow...
 
-    while cap.isOpened():
+    while True:
 
-        is_success, frame = cap.read()
-        if is_success:
-            img = frame
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-            bboxes, landmarks, faces = align_multi(cfg, img, min_confidence=FLAGS.min_confidence, limits=3)
-            bboxes = bboxes.astype(int)
-            embs = []
-            for face in faces:
-                if len(face.shape) == 3:
-                    face = np.expand_dims(face, 0)
-                face = face.astype(np.float32) / 255.
-                embs.append(l2_norm(model(face)).numpy())
+        frame = pipe.wait_for_frames()
 
-            list_min_idx = []
-            list_score = []
-            for emb in embs:
-                dist = [euclidean(emb, target) for target in targets]
-                min_idx = np.argmin(dist)
-                list_min_idx.append(min_idx)
-                list_score.append(dist[int(min_idx)])
-            list_min_idx = np.array(list_min_idx)
-            list_score = np.array(list_score)
-            list_min_idx[list_score > FLAGS.threshold] = -1
-            for idx, box in enumerate(bboxes):
-                frame = utils.draw_box_name(box,
-                                            landmarks[idx],
-                                            names[list_min_idx[idx] + 1],
-                                            frame)
-            frame = cv2.resize(frame, (640, 480))
-            cv2.imshow('face Capture', frame)
+        img = frame
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        bboxes, landmarks, faces = align_multi(cfg, img, min_confidence=FLAGS.min_confidence, limits=3)
+        bboxes = bboxes.astype(int)
+        embs = []
+        for face in faces:
+            if len(face.shape) == 3:
+                face = np.expand_dims(face, 0)
+            face = face.astype(np.float32) / 255.
+            embs.append(l2_norm(model(face)).numpy())
+
+        list_min_idx = []
+        list_score = []
+        for emb in embs:
+            dist = [euclidean(emb, target) for target in targets]
+            min_idx = np.argmin(dist)
+            list_min_idx.append(min_idx)
+            list_score.append(dist[int(min_idx)])
+        list_min_idx = np.array(list_min_idx)
+        list_score = np.array(list_score)
+        list_min_idx[list_score > FLAGS.threshold] = -1
+        for idx, box in enumerate(bboxes):
+            frame = utils.draw_box_name(box,
+                                        landmarks[idx],
+                                        names[list_min_idx[idx] + 1],
+                                        frame)
+        frame = cv2.resize(frame, (640, 480))
+        cv2.imshow('face Capture', frame)
+
         key = cv2.waitKey(1) & 0xFF
         if FLAGS.save:
             video_writer.write(frame)
@@ -101,10 +107,9 @@ def main(_argv):
         if key == ord('q'):
             break
 
-    cap.release()
     if FLAGS.save:
         video_writer.release()
-    cv2.destroyAllWindows()
+    pipe.stop()
 
 
 if __name__ == '__main__':

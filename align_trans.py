@@ -202,38 +202,6 @@ def warp_and_crop_face(src_img,
                        reference_pts=None,
                        crop_size=(96, 112),
                        align_type='cv2_affine'):
-    """
-    Function:
-    ----------
-        apply affine transform 'trans' to uv
-    Parameters:
-    ----------
-        @src_img: 3x3 np.array
-            input image
-        @facial_pts: could be
-            1)a list of K coordinates (x,y)
-        or
-            2) Kx2 or 2xK np.array
-            each row or col is a pair of coordinates (x, y)
-        @reference_pts: could be
-            1) a list of K coordinates (x,y)
-        or
-            2) Kx2 or 2xK np.array
-            each row or col is a pair of coordinates (x, y)
-        or
-            3) None
-            if None, use default reference facial points
-        @crop_size: (w, h)
-            output face image size
-        @align_type: transform type, could be one of
-            1) 'similarity': use similarity transform
-            2) 'cv2_affine': use the first 3 points to do affine transform,
-                    by calling cv2.getAffineTransform()
-            3) 'affine': use all points to do affine transform
-    Returns:
-    ----------
-        @face_img: output face image with size (w, h) = @crop_size
-    """
 
     if reference_pts is None:
         if crop_size[0] == 96 and crop_size[1] == 112:

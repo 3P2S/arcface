@@ -64,13 +64,15 @@ def load_facebank(cfg):
     return embeddings, names
 
 
-def align_multi(cfg, image, limits=None):
+def align_multi(cfg, image, min_confidence=0.97, limits=None):
     boxes = []
     landmarks = []
     detector = MTCNN()
     faces = detector.detect_faces(image)
     refrence = get_reference_facial_points(default_square=True)
     for face in faces:
+        if face['confidence'] < min_confidence:
+            continue
         boxes.append(face['box'])
         landmark = []
         for name, points in face['keypoints'].items():
