@@ -115,13 +115,13 @@ python evaluate.py
 
 ### Build own face dataset
 
-```python
+```bash
 python take_pic.py -o path/to/dataset -n name
 ```
 
 ### Run inference
 
-```python
+```bash
 python infer.py --update True
 ```
 
