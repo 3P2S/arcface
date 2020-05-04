@@ -13,42 +13,14 @@ Offical Implementation: &nbsp; [MXNet](https://github.com/deepinsight/insightfac
 ****
 
 ## Contents
-:bookmark_tabs:
 
-* [Installation](#Installation)
 * [Data Preparing](#Data-Preparing)
 * [Training and Testing](#Training-and-Testing)
 * [Benchmark and Models](#Benchmark-and-Models)
 * [References](#References)
 
-## Installation
-:pizza:
-
-Create a new python virtual environment by [Anaconda](https://www.anaconda.com/) or just use pip in your python environment and then clone this repository as following.
-
-### Clone this repo
-```bash
-git clone https://github.com/peteryuX/arcface-tf2.git
-cd arcface-tf2
-```
-
-### Conda
-```bash
-conda env create -f environment.yml
-conda activate arcface-tf2
-```
-
-### Pip
-
-```bash
-pip install -r requirements.txt
-```
-
-****
 
 ## Data Preparing
-:beer:
-
 All datasets used in this repository can be found from [face.evoLVe.PyTorch's Data-Zoo](https://github.com/ZhaoJ9014/face.evoLVe.PyTorch#Data-Zoo).
 
 Note:
@@ -88,9 +60,8 @@ Download [LFW](https://drive.google.com/file/d/1WO5Meh_yAau00Gm2Rz2Pc0SRldLQYigT
 ****
 
 ## Training and Testing
-:lollipop:
 
-You can modify your own dataset path or other settings of model in [./configs/*.yaml](https://github.com/peteryuX/arcface-tf2/tree/master/configs) for training and testing, which like below.
+You can modify your own dataset path or other settings of model in [./configs/*.yaml](https://github.com/3P2S/arcface/tree/master/configs) for training and testing, which like below.
 
 ```python
 # general (shared both in training and testing)
@@ -118,7 +89,7 @@ test_dataset: '/your/path/to/test_dataset'
 
 Note:
 - The `sub_name` is the name of outputs directory used in checkpoints and logs folder. (make sure of setting it unique to other models)
-- The `head_type` is used to choose [ArcFace](https://arxiv.org/abs/1801.07698) head or normal fully connected layer head for classification in training. (see more detail in [./modules/models.py](https://github.com/peteryuX/arcface-tf2/blob/master/modules/models.py#L90-L94))
+- The `head_type` is used to choose [ArcFace](https://arxiv.org/abs/1801.07698) head or normal fully connected layer head for classification in training. (see more detail in [./modules/models.py](https://github.com/3P2S/arcface/blob/master/modules/models.py#L90-L94))
 - The `is_ccrop` means doing central-cropping on both trainging and testing data or not.
 - The `binary_img` is used to choose the type of training data, which should be according to the data type you created in the [Data-Preparing](#Data-Preparing).
 
@@ -136,24 +107,25 @@ python train.py --mode="fit" --cfg_path="./configs/arc_res50.yaml"
 
 ### Testing
 
-You can download my trained models for testing from [Benchmark and Models](#Benchmark-and-Models) without training it yourself. And, evaluate the models you got with the corresponding cfg file on the testing dataset. The testing code in [./modules/evaluations.py](https://github.com/peteryuX/arcface-tf2/blob/master/modules/evaluations.py) were modified from [face.evoLVe](https://github.com/ZhaoJ9014/face.evoLVe.PyTorch).
+You can download my trained models for testing from [Benchmark and Models](#Benchmark-and-Models) without training it yourself. 
 
 ```bash
-python infer.py 
+python evaluate.py 
 ```
 
-### Encode Input Image
+### Build own face dataset
 
-You can also encode image into latent vector by model. For example, encode the image from [./data/BruceLee.jpg](https://github.com/peteryuX/arcface-tf2/blob/master/data/BruceLee.jpg) and save to `./output_embeds.npy` as following.
-
-```bash
-python test.py --cfg_path="./configs/arc_res50.yaml" --img_path="./data/BruceLee.jpg"
+```python
+python take_pic.py -o path/to/dataset -n name
 ```
 
-****
+### Run inference
+
+```python
+python infer.py --update True
+```
 
 ## Benchmark and Models
-:coffee:
 
 Verification results (%) of different backbone, head tpye, data augmentation and loss function.
 
@@ -166,12 +138,14 @@ Verification results (%) of different backbone, head tpye, data augmentation and
 
 Note:
 - The 'CCrop' tag above means doing central-cropping on both trainging and testing data, which could eliminate the redundant boundary of intput face data (especially for AgeDB-30).
-- All training settings of the models can be found in the corresponding [./configs/*.yaml](https://github.com/peteryuX/arcface-tf2/tree/master/configs) files.
+- All training settings of the models can be found in the corresponding [./configs/*.yaml](https://github.com/3P2S/arcface/tree/master/configs) files.
 
 ****
 
+## Create own dataset
+
+
 ## References
-:hamburger:
 
 Thanks for these source codes porviding me with knowledges to complete this repository.
 
